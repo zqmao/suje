@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> 获取上传列表 </title>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <script src="../jquery.min.js"></script>
+  <script src="../base.js"></script>
+  <style>
+	body{
+		margin:auto;
+		text-align:center;
+	}
+	input{
+		margin-top:10px;
+	}
+	#resp{
+		text-align:left;
+	}
+	
+  </style>
+  <script type="text/javascript">
+  <!--
+	function getUploadFilesSuccess(files){
+		try{
+			alert(files);
+			$.each(files,function(i,file){
+				$("#resp").append(JSON.stringify(file)+"<hr/>");
+			});
+		}catch(err){
+			alert("error");				
+		}
+	}
+	function getUploadFilesError(err){
+		$("#resp").append("获取失败！失败原因："+err);
+	}
+	function getList(){
+		$("#resp").html("");
+		try{
+			iSuje_.getUploadFiles("getUploadFilesSuccess","getUploadFilesError");
+		}catch(e){
+			$("#resp").append("iSuje.getUploadFiles调用失败");
+		}
+	}
+	function delete_(){
+		var val = $("#fileId").val();
+		if(!val){
+			alert("请输入文件ID");
+			return;
+		}
+		iSuje_.downLoadDelete(val,{"key":val},"delSuccessFun","delErrFun");
+	}
+	function delSuccessFun(h5){
+		alert("删除成功："+h5);
+	}
+	function delErrFun(err,h5){
+		alert("删除失败："+err);
+	}
+  //-->
+  </script>
+ </head>
+
+ <body>
+  
+	<input type="button" value="获取列表" onclick="getList()"/>
+	<input type="text" id="fileId"/>
+	<input type="button" value="删除" onclick="delete_()"/>
+	<div id="resp"></div>
+	
+ </body>
+</html>

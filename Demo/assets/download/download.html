@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> 下载文件 </title>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <script src="../jquery.min.js"></script>
+  <script src="../base.js"></script>
+  <style>
+	body{
+		margin:auto;
+		text-align:center;
+	}
+	input{
+		margin-top:10px;
+	}
+	#resp{
+		text-align:left;
+	}
+	#file{
+		display:none;
+	}
+	
+  </style>
+  <script type="text/javascript">
+  <!--
+	
+	
+	function downLoadInjectSuccess(fileId,size,totalSize){
+		$("#resp").append("downLoadInjectSuccess:"+fileId+","+size+","+totalSize+"<hr/>");
+		$("tr[data-app-fileId='"+fileId+"']").find(".status").html("正在下载"+size+"/"+totalSize+"..");
+	}
+	function downLoadInjectError(err){
+		$("#resp").append("inject回调失败<hr/>");
+	}
+
+	function downloadSuccess(fileId,h5){
+		try{
+			$("#resp").append("调用成功：fileId="+fileId+";h5="+JSON.stringify(h5)+"<hr/>");
+			var id = h5.id;
+
+			var jDom = $("#"+id);
+			jDom.attr("data-app-fileId",fileId);
+			jDom.attr("isPause","0");
+			jDom.find(".status").html("正在下载..");
+
+		}catch(err){
+			$("#resp").append("失败原因："+err);
+		}
+	}
+	function downloadError(err,h5){
+		var id = h5.id;
+		var jDom = $("#"+id);
+		jDom.find(".status").html("下载失败");
+		$("#resp").append("下载失败！失败原因："+err);
+	}
+
+	function downLoadPauseSuccess(h5){
+		var id = h5.id;
+		var jDom = $("#"+id);
+		jDom.attr("isPause","1");
+		jDom.find(".status").html("暂停中");
+	}
+	function downLoadPauseError(err,h5){
+		var id = h5.id;
+		var jDom = $("#"+id);
+		jDom.find(".status").html("暂停失败");
+		$("#resp").append("暂停失败！失败原因："+err);
+	}
+	
+
+	
+	$(document).ready(function(){
+		$(".download").click(function(){
+			
+			$("#resp").html("");
+			var fileId = $(this).attr("data-file");
+			var jDom = $(this).parents("tr");
+			var dataId = jDom.attr("id");
+			var isPause = jDom.attr("isPause");
+			
+
+			var appFileId = jDom.attr("data-app-fileId");
+			try{
+				var config = {};
+				config.fileId = appFileId;
+				config.serverUrl = base.downloadUrl+"/"+fileId+"/url";
+				var headers = {};
+				headers["Authorization"]=base.token;
+				config.headers = headers;
+				var data = {};
+				config.data = data;
+				var h5 = {};
+				h5.id = dataId;
+				config.h5 = h5;
+
+				
+				iSuje_.downLoadInject("downLoadInjectSuccess","downLoadInjectError");
+
+				iSuje_.download(config,"downloadSuccess","downloadError");
+				
+				
+
+			}catch(e){
+				$("#resp").append("iSuje.download调用失败："+e);
+			}
+		});
+		$(".pause").click(function(){
+			var jDom = $(this).parents("tr");
+			var dataId = jDom.attr("id");
+			var isPause = jDom.attr("isPause");
+			
+
+			var appFileId = jDom.attr("data-app-fileId");
+			iSuje_.downLoadPause(appFileId,{id:dataId},"downLoadPauseSuccess","downLoadPauseError");
+
+			
+		});
+	});
+	
+	setInterval(function(){
+		iSuje_.getNetwork("getNetworkSuccess");
+	},4000);
+	
+	function getNetworkSuccess(msg){
+		var network = localStorage.getItem("network");
+		localStorage.setItem("network",msg);
+		alert(network+":"+msg);
+		if(msg == 'null' && network!=msg){//无网络修改状态
+			$("tr").each(function(){
+				var jDom = $(this);
+				var appFileId = jDom.attr("data-app-fileId");
+				iSuje_.updateStatus(appFileId,'4','1',"updateStatusSuccess","updateStatusError");
+			});
+		}
+		else if(network && network!=msg && msg!='wifi'){//判断是否属于非WiFi状态
+			var t = confirm("当前处于非WiFi是否继续？");
+			if(t){//继续下载
+				$("tr").each(function(){
+					var jDom = $(this);
+					var dataId = jDom.attr("id");
+					var appFileId = jDom.attr("data-app-fileId");
+
+					var config = {};
+					config.fileId = appFileId;
+					config.serverUrl = base.downloadUrl+"/20/url";
+					var headers = {};
+					headers["Authorization"]=base.token;
+					config.headers = headers;
+					var data = {};
+					config.data = data;
+					var h5 = {};
+					h5.id = dataId;
+					config.h5 = h5;
+					
+					iSuje_.download(config,"downloadSuccess","downloadError");
+
+				});
+			}else{//暂停
+				$("tr").each(function(){
+					var jDom = $(this);
+					var dataId = jDom.attr("id");
+					var appFileId = jDom.attr("data-app-fileId");
+					
+					iSuje_.downLoadPause(appFileId,{id:dataId},"downLoadPauseSuccess","downLoadPauseError");
+				});
+				
+			}
+		}
+		
+	}
+
+
+	function getNet(){
+		iSuje_.getNetwork("getNetworkSuccess1");
+	}
+
+	function getNetworkSuccess1(msg){
+		alert(msg);
+	}
+
+
+	function updateStatusSuccess(h5){
+		alert("修改状态成功"+h5);
+	}
+
+	function updateStatusError(){
+		alert("修改状态失败");
+	}
+
+	function getBase64(){
+		
+		var url = $("#fileUrl").val();
+
+		iSuje_.getImageBase64(url,'base64Img',"base64Success","base64Error");
+	}
+
+	function base64Success(str,id){
+		alert(id);
+		$("#"+id).attr("src",str);
+	}
+	function base64Error(err,id){
+		alert("获取base64失败");
+	}
+  //-->
+  </script>
+ </head>
+
+ <body>
+	
+	<input type="button" value="获取网络状态" onclick="getNet();"/>
+	
+	<br/><br/>
+	
+	<input type="text" id="fileUrl"/>
+	<input type="button" value="getBase64" onclick="getBase64()"/>
+	<img src="" id="base64Img"/>
+
+	<table style="width:100%;">
+		<tr id="tr1" isPause="1">
+			<td>文件20</td>
+			<td>
+				<input type="button" class="download" data-file="20" value="下载"/>
+				<input type="button" class="pause" value="暂停"/>
+			</td>
+			<td class="status">未开始</td>
+		</tr>
+	</table>
+
+	<div id="resp"></div>
+	
+ </body>
+</html>
