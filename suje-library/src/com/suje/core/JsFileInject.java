@@ -572,30 +572,33 @@ import com.suje.util.NetworkUtil;
 
         @Override
         public void onSuccess(String id) {
-            try {
+        	try {
                 JsFileUp jsFileUp = SujeDbHelper.getInstance(mContext).load(JsFileUp.class, id);
                 if(jsFileUp != null){
                     jsFileUp.setStatus(JsFile.STATUS_SUCC);
                     SujeDbHelper.getInstance(mContext).update(jsFileUp);
                 }
+                File file = new File(jsFileUp.getUrl());
+                if(mProgressUpSuccessCallback != null){
+                	mProgressUpSuccessCallback.apply(id, file.length(), file.length());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            FileUpMngr.getInstance(mContext).uploadCommit(id);
         }
 
         @Override
         public void onProgressChange(String id, int bytesWritten, int totalSize) {
             Log.e("onProgressChange", id + "" + bytesWritten + "--" + totalSize);
             if(mProgressUpSuccessCallback != null){
-            	mProgressUpSuccessCallback.apply(id, bytesWritten, totalSize);
+            	mProgressUpSuccessCallback.apply(id, bytesWritten - 1, totalSize);
             }
         }
 
         @Override
         public void onFailure(String id, String msg) {
             if(mUpFailureCallback != null){
-            	mUpFailureCallback.apply("error");
+            	mUpFailureCallback.apply(msg);
             }
             try {
                 JsFileUp jsFileUp = SujeDbHelper.getInstance(mContext).load(JsFileUp.class, id);

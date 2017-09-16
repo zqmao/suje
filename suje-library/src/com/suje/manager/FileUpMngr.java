@@ -207,9 +207,7 @@ public class FileUpMngr {
 		final int index = jsFileUp.getPartId();
 		if(index >= total){
 			//上传完毕
-			for(ProgressChangeUp listener : listeners){
-				listener.onSuccess(id);
-			}
+			FileUpMngr.getInstance(mContext).uploadCommit(id);
 			return;
 		}
 		RequestParams params = new RequestParams();
@@ -242,10 +240,7 @@ public class FileUpMngr {
 					e.printStackTrace();
 				}
 				if(index + 1 >= total){
-					//上传完毕
-					for(ProgressChangeUp listener : listeners){
-						listener.onSuccess(id);
-					}
+					FileUpMngr.getInstance(mContext).uploadCommit(id);
 					return;
 				}
 				for(ProgressChangeUp listener : listeners){
@@ -308,12 +303,19 @@ public class FileUpMngr {
 			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 				Log.e("FileUpMngr", "commit upload fail");
 				Toast.makeText(mContext, "上传失败", Toast.LENGTH_SHORT).show();
+				for(ProgressChangeUp listener : listeners){
+					listener.onFailure(fileId, " commit fail ");
+				}
 			}
 
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, String responseString) {
 				Log.e("FileUpMngr", "commit upload success");
 				Toast.makeText(mContext, "上传成功", Toast.LENGTH_SHORT).show();
+				//上传完毕
+				for(ProgressChangeUp listener : listeners){
+					listener.onSuccess(fileId);
+				}
 			}
 		});
 	}
