@@ -4,7 +4,7 @@ base.ownerId = "54";
 //当前文件夹 root
 base.parent = 0;
 //token信息
-base.token = "Onebox/07B8E75AD7A7013005B35AEBB919C73C0D0E6B4AF1672C08B3CD66BA";
+base.token = "Onebox/2E7813F392353D71FA85B3BEE8E44E059C376F072B45A3DA502D6D8D";
 //预上传URL
 base.uploadUrl = "https://pan8.csibox.cn/api/v2/files/"+base.ownerId;
 base.uploadRefreshUrl = "https://pan8.csibox.cn/api/v2/files/:ownerId/:fileId/refreshurl";
