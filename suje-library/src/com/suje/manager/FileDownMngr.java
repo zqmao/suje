@@ -25,7 +25,6 @@ import com.suje.http.TextHttpResponseHandler;
  */
 public class FileDownMngr {
 
-	private static Context mContext;
 	private static FileDownMngr INSTANCE;
 	
 	/**
@@ -46,7 +45,6 @@ public class FileDownMngr {
 	}
 	
 	private FileDownMngr(Context context){
-		mContext = context;
 	}
 
 	/**
@@ -86,7 +84,7 @@ public class FileDownMngr {
 			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 				//初始化失败
 				for(ProgressChangeDown listener : listeners){
-					listener.onPreFailure("preDownload onPreFailure", h5);
+					listener.onPreFailure(responseString, h5);
 				}
 			}
 
@@ -143,7 +141,6 @@ public class FileDownMngr {
 				if(!isLoading(id)){
 					return;
 				}
-				int process = (int) ((bytesWritten / (double)totalSize) * 100);
 				for(ProgressChangeDown listener : listeners){
 					listener.onProgressChange(id, bytesWritten, totalSize);
 				}

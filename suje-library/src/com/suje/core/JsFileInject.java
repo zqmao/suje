@@ -411,7 +411,7 @@ import com.suje.util.NetworkUtil;
                     JsFileDown jsFileDown = SujeDbHelper.getInstance(mContext).load(JsFileDown.class, id);
                     if(jsFileDown == null){
                         if(mDownFailureCallback != null){
-                        	mDownFailureCallback.apply("error", h5);
+                        	mDownFailureCallback.apply("there are not item in db ", h5);
                         }
                         return;
                     }else{
@@ -441,7 +441,7 @@ import com.suje.util.NetworkUtil;
         @Override
         public void onPreFailure(String msg, JSONObject h5) {
             if(mDownFailureCallback != null){
-            	mDownFailureCallback.apply("error", h5);
+            	mDownFailureCallback.apply(msg, h5);
             }
         }
 

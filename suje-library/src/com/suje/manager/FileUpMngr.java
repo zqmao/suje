@@ -11,7 +11,6 @@ import org.apache.http.Header;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -112,7 +111,7 @@ public class FileUpMngr {
 			@Override
 			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 				for(ProgressChangeUp listener : listeners){
-					listener.onPreFailure("preUpload fail" + responseString, h5);
+					listener.onPreFailure(responseString, h5);
 				}
 			}
 
@@ -172,7 +171,7 @@ public class FileUpMngr {
 			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 				Log.e("FIleUpMngr", "responseString:" + responseString);
 				for(ProgressChangeUp listener : listeners){
-					listener.onPreFailure("refreshUpload fail" + responseString, h5);
+					listener.onPreFailure(responseString, h5);
 				}
 			}
 
@@ -251,7 +250,7 @@ public class FileUpMngr {
 			@Override
 			public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
 				stopTask(id);
-				String msg = "upload per " + index + " is fail" + statusCode + error.getMessage();
+				String msg = new String(responseBody);
 				if(statusCode == 0){
 					msg = "network";
 				}
@@ -302,16 +301,14 @@ public class FileUpMngr {
 			@Override
 			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 				Log.e("FileUpMngr", "commit upload fail");
-				Toast.makeText(mContext, "上传失败", Toast.LENGTH_SHORT).show();
 				for(ProgressChangeUp listener : listeners){
-					listener.onFailure(fileId, " commit fail ");
+					listener.onFailure(fileId, responseString);
 				}
 			}
 
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, String responseString) {
 				Log.e("FileUpMngr", "commit upload success");
-				Toast.makeText(mContext, "上传成功", Toast.LENGTH_SHORT).show();
 				//上传完毕
 				for(ProgressChangeUp listener : listeners){
 					listener.onSuccess(fileId);

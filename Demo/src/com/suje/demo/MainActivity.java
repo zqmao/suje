@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
         
         String url = getIntent().getStringExtra("url");
         url="http://115.28.1.196/test//worker.html?token=Onebox/FBE5C4AD9F2D0477124E7DE2231CEFC4269667A8432280147AA2AFEF&ownerId=54&thirdExterpriseId=123123";
-        url="file:///android_asset/download/download.html";
+        url="https://weixin.armjs.com/demo/worker.html?token=Onebox/2E7813F392353D71FA85B3BEE8E44E059C376F072B45A3DA502D6D8D&ownerId=54&thirdExterpriseId=500310&phoneNum=13275898746&userId=35&alias=赵紫尧";
         wv.loadUrl(url);
     }
     
