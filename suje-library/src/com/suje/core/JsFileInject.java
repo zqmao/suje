@@ -152,7 +152,7 @@ import com.suje.util.NetworkUtil;
             String result = getRefreshUploadUrl(ownerId, jsFileUp.getServerFileId(), refreshUrl);
             if(TextUtils.isEmpty(result)){
             	if(mUpFailureCallback != null){
-            		mUpFailureCallback.apply("refreshUrl is empty", h5);
+            		mUpFailureCallback.apply("refreshUrl or ownerId or serverFileId is empty", h5);
                 }
             	return;
             }
@@ -229,7 +229,7 @@ import com.suje.util.NetworkUtil;
     }
 
     private static String getRefreshUploadUrl(String ownerId, String serverFileId, String refreshUrl){
-    	if(TextUtils.isEmpty(refreshUrl)){
+    	if(TextUtils.isEmpty(ownerId) || TextUtils.isEmpty(serverFileId) || TextUtils.isEmpty(refreshUrl)){
     		return "";
     	}
         return refreshUrl.replaceAll(":ownerId", ownerId).replaceAll(":fileId", serverFileId);
@@ -402,6 +402,7 @@ import com.suje.util.NetworkUtil;
                 jsFileDown.setStatus(JsFile.STATUS_ING);
                 jsFileDown.setName(file.getName());
                 jsFileDown.setH5(h5.toJSONString());
+                jsFileDown.setThirdExterpriseId(thirdExterpriseId);
                 try {
                     SujeDbHelper.getInstance(mContext).create(jsFileDown);
                 } catch (Exception e) {

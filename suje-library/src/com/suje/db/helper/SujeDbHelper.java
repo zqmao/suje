@@ -137,10 +137,17 @@ public class SujeDbHelper {
     	return null;
     }
     
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public <T> List<T> list(Class<T> clazz, String thirdExterpriseId, String pageNum, String pageSize){
-    	int page = Integer.parseInt(pageNum);//第几页
-    	int rows = Integer.parseInt(pageSize);//每页多少条
+    	int page = 0;//第几页
+    	int rows = 0;//每页多少条
+    	try{
+    		page = Integer.parseInt(pageNum);//第几页
+        	rows = Integer.parseInt(pageSize);//每页多少条
+    	}catch(Exception e){
+    		page = 1;
+        	rows = 10;
+    	}
     	int index = (page - 1) * rows;
     	SQLiteDatabase db = mCoreHelper.getReadableDatabase();
     	Cursor cursor = null;
