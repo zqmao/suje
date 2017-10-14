@@ -1,10 +1,10 @@
 var base = {};
 //当前用户ID
-base.ownerId = "54";
+base.ownerId = "48";
 //当前文件夹 root
 base.parent = 0;
 //token信息
-base.token = "Onebox/2E7813F392353D71FA85B3BEE8E44E059C376F072B45A3DA502D6D8D";
+base.token = "Onebox/BA84668F6CE69F6F9AFBA8BDD5DE41E30112DCA85A6897A0F2168696";
 //预上传URL
 base.uploadUrl = "https://pan8.csibox.cn/api/v2/files/"+base.ownerId;
 base.uploadRefreshUrl = "https://pan8.csibox.cn/api/v2/files/:ownerId/:fileId/refreshurl";
@@ -51,18 +51,18 @@ var iSuje_ = {
 			iSuje.uploadInject(successFun,errFun);
 		}
 	},
-	getUploadFiles:function(successFun,errFun){
+	getUploadFiles:function(thirdExterpriseId, pageNum, pageSize, successFun,errFun){
 		if(iSuje_.isIOS){
 			window.webkit.messageHandlers.iSuje.postMessage({methodUser:"iSuje",methodName:"getUploadFiles",callback1:successFun,callback2:errFun});
 		}else{
-			iSuje.getUploadFiles(successFun,errFun);
+			iSuje.getUploadFiles(thirdExterpriseId, pageNum, pageSize,successFun,errFun);
 		}
 	},
-	upload:function(config,successFun,errFun){
+	upload:function(thirdExterpriseId,config,successFun,errFun){
 		if(iSuje_.isIOS){
 			window.webkit.messageHandlers.iSuje.postMessage({methodUser:"iSuje",methodName:"upload",callback1:config,callback2:successFun,callback3:errFun});
 		}else{
-			iSuje.upload(config,successFun,errFun);
+			iSuje.upload(thirdExterpriseId,config,successFun,errFun);
 		}
 	},
 	uploadPause:function(fileId,h5,successFun,errFun){
@@ -88,18 +88,18 @@ var iSuje_ = {
 			iSuje.downLoadInject(successFun,errFun);
 		}
 	},
-	getDownLoadFiles:function(successFun,errFun){
+	getDownLoadFiles:function(thirdExterpriseId, pageNum, pageSize,successFun,errFun){
 		if(iSuje_.isIOS){
 			window.webkit.messageHandlers.iSuje.postMessage({methodUser:"iSuje",methodName:"getDownLoadFiles",callback1:successFun,callback2:errFun});
 		}else{
-			iSuje.getDownLoadFiles(successFun,errFun);
+			iSuje.getDownLoadFiles(thirdExterpriseId, pageNum, pageSize,successFun,errFun);
 		}
 	},
-	download:function(config,successFun,errFun){
+	download:function(thirdExterpriseId,config,successFun,errFun){
 		if(iSuje_.isIOS){
 			window.webkit.messageHandlers.iSuje.postMessage({methodUser:"iSuje",methodName:"download",callback1:config,callback2:successFun,callback3:errFun});
 		}else{
-			iSuje.download(config,successFun,errFun);
+			iSuje.download(thirdExterpriseId,config,successFun,errFun);
 		}
 	},
 	downLoadPause:function(fileId,h5,successFun,errFun){

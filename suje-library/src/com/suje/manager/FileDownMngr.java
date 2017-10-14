@@ -75,7 +75,7 @@ public class FileDownMngr {
 		listeners.remove(listener);
 	}
 
-	public void preDownload(final String fileId, String url, Map<String, String> headers, final JSONObject h5){
+	public void preDownload(final String fileId, final String thirdExterpriseId, String url, Map<String, String> headers, final JSONObject h5){
 		//如果本地数据库没有记录，就初始化；否则就继续下载
 		//初始化获取下载地址
 		FileHttpClient.getClient().addHeaders(headers);
@@ -94,7 +94,7 @@ public class FileDownMngr {
 				String downloadUrl = object.getString("downloadUrl");
 				//初始化成功
 				for(ProgressChangeDown listener : listeners){
-					listener.onPreSuccess(fileId, downloadUrl, h5);
+					listener.onPreSuccess(fileId, thirdExterpriseId, downloadUrl, h5);
 				}
 			}
 		});

@@ -55,12 +55,12 @@ import com.suje.util.NetworkUtil;
      */
     private static JsCallback mUpListSuccessCallback;
     private static JsCallback mUpListFailureCallback;
-    public static void getUploadFiles(WebView webView, final String success, final String error) {
+    public static void getUploadFiles(WebView webView, String thirdExterpriseId, String pageNum, String pageSize, final String success, final String error) {
         mContext = webView.getContext();
         mUpListSuccessCallback = new JsCallback(webView, success);
         mUpListFailureCallback = new JsCallback(webView, error);
         try {
-            List<JsFileUp> files = SujeDbHelper.getInstance(mContext).list(JsFileUp.class);
+            List<JsFileUp> files = SujeDbHelper.getInstance(mContext).list(JsFileUp.class, thirdExterpriseId, pageNum, pageSize);
             String temp = JSON.toJSONString(files);
             JSONArray result = JSON.parseArray(temp);
             if(mUpListSuccessCallback != null){
@@ -82,7 +82,7 @@ import com.suje.util.NetworkUtil;
 
     private static JsCallback mUpSuccessCallback;
     private static JsCallback mUpFailureCallback;
-    public static void upload(WebView webView, JSONObject config, final String success, final String error){
+    public static void upload(WebView webView, String thirdExterpriseId, JSONObject config, final String success, final String error){
         mContext = webView.getContext();
         FileUpMngr.getInstance(mContext).addListenner(mUploadProgressChange);
         mUpSuccessCallback = new JsCallback(webView, success);
@@ -124,6 +124,7 @@ import com.suje.util.NetworkUtil;
             jsFileUp.setDateTime(fileId);
             jsFileUp.setH5(h5.toJSONString());
             jsFileUp.setStatus(JsFile.STATUS_ING);
+            jsFileUp.setThirdExterpriseId(thirdExterpriseId);
             jsFileUp.setName(file.getName());
             jsFileUp.setTotalSize(file.length());
             jsFileUp.setSize(0);
@@ -244,13 +245,13 @@ import com.suje.util.NetworkUtil;
      */
     private static JsCallback mDownListSuccessCallback;
     private static JsCallback mDownListFailureCallback;
-    public static void getDownLoadFiles(WebView webView, final String success, final String error) {
+    public static void getDownLoadFiles(WebView webView, String thirdExterpriseId, String pageNum, String pageSize, final String success, final String error) {
         mContext = webView.getContext();
         mDownListSuccessCallback = new JsCallback(webView, success);
         mDownListFailureCallback = new JsCallback(webView, error);
         //下载文件存放在sdcard中
         try {
-            List<JsFileDown> files = SujeDbHelper.getInstance(mContext).list(JsFileDown.class);
+            List<JsFileDown> files = SujeDbHelper.getInstance(mContext).list(JsFileDown.class, thirdExterpriseId, pageNum, pageSize);
             for(JsFileDown jsFileDown : files){
                 String filePath = Contants.FILE_DOWNLOAD_PATH + jsFileDown.getName();
                 File file = new File(filePath);
@@ -282,7 +283,7 @@ import com.suje.util.NetworkUtil;
 
     private static JsCallback mDownSuccessCallback;
     private static JsCallback mDownFailureCallback;
-    public static void download(WebView webView, JSONObject config, final String success, final String error){
+    public static void download(WebView webView, String thirdExterpriseId, JSONObject config, final String success, final String error){
         mContext = webView.getContext();
         FileDownMngr.getInstance(mContext).addListenner(mDownloadProgressChange);
         mDownSuccessCallback = new JsCallback(webView, success);
@@ -311,7 +312,7 @@ import com.suje.util.NetworkUtil;
             String value = headers.getString(key);
             map.put(key, value);
         }
-        FileDownMngr.getInstance(mContext).preDownload(fileId, url, map, h5);
+        FileDownMngr.getInstance(mContext).preDownload(fileId, thirdExterpriseId, url, map, h5);
     }
 
     private static JsCallback mDownPauseSuccessCallback;
@@ -387,7 +388,7 @@ import com.suje.util.NetworkUtil;
         private Map<String, Boolean> mFirst = new HashMap<String, Boolean>();
 
         @Override
-        public void onPreSuccess(String id, String url, JSONObject h5) {
+        public void onPreSuccess(String id, String thirdExterpriseId, String url, JSONObject h5) {
             //预加载成功后，开始下载
             File file = null;
             if(TextUtils.isEmpty(id)){
@@ -502,7 +503,7 @@ import com.suje.util.NetworkUtil;
     private static ProgressChangeUp mUploadProgressChange = new ProgressChangeUp() {
 
         @Override
-        public void onPreSuccess(String id, String url, JSONObject h5) {
+        public void onPreSuccess(String id, String thirdExterpriseId, String url, JSONObject h5) {
             //预上传成功后，开始上传
             //刷新上传地址后，开始上传
             JsFileUp jsFileUp = null;

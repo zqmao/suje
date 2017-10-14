@@ -17,6 +17,7 @@ public class JsFile implements Serializable {
     private String dateTime;
     private String h5;
     private int status;//状态 1:上传下载中;2:上传下载失败;3:上传下载成功;4:已暂停;
+    private String thirdExterpriseId;//个人所在的企业id
 
     public static final int STATUS_ING = 1;
     public static final int STATUS_FAIL = 2;
@@ -72,4 +73,12 @@ public class JsFile implements Serializable {
     public void setStatus(int status) {
         this.status = status;
     }
+
+	public String getThirdExterpriseId() {
+		return thirdExterpriseId;
+	}
+
+	public void setThirdExterpriseId(String thirdExterpriseId) {
+		this.thirdExterpriseId = thirdExterpriseId;
+	}
 }

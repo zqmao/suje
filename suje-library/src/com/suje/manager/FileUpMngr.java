@@ -148,7 +148,7 @@ public class FileUpMngr {
 					e.printStackTrace();
 				}
 				for(ProgressChangeUp listener : listeners){
-					listener.onPreSuccess(fileId, uploadUrl, h5);
+					listener.onPreSuccess(fileId, "", uploadUrl, h5);
 				}
 			}
 		});
@@ -181,7 +181,7 @@ public class FileUpMngr {
 				String uploadUrl = object.getString("uploadUrl");
 				//refresh获得的uploadUrl，不用保存，上传后，就失效了
 				for(ProgressChangeUp listener : listeners){
-					listener.onPreSuccess(fileId, uploadUrl, h5);
+					listener.onPreSuccess(fileId, "", uploadUrl, h5);
 				}
 			}
 		});

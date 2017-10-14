@@ -13,7 +13,7 @@ public interface ProgressChangeDown{
      * @param url
      * @param h5
      */
-    void onPreSuccess(String id, String url, JSONObject h5);
+    void onPreSuccess(String id, String thirdExterpriseId, String url, JSONObject h5);
 
     /**
      * 预处理失败

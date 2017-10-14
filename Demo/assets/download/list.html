@@ -40,7 +40,7 @@
 	function getList(){
 		$("#resp").html("");
 		try{
-			iSuje_.getDownLoadFiles("getDownLoadFilesSuccess","getDownLoadFilesError");
+			iSuje_.getDownLoadFiles("121", "getDownLoadFilesSuccess","getDownLoadFilesError");
 		}catch(e){
 			$("#resp").append("iSuje.getDownLoadFiles调用失败");
 		}

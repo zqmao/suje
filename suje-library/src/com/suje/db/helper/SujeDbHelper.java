@@ -16,7 +16,7 @@ import com.suje.db.JsFileUp;
 public class SujeDbHelper {
 	
 	public static final String DATABASE_NAME = "isuje.db";
-    public static final int DATABASE_VERSION = 1;//
+    public static final int DATABASE_VERSION = 2;//
 	private static SujeDbHelper mDbHelper;
 	private static CoreHelper mCoreHelper;
 	
@@ -43,6 +43,7 @@ public class SujeDbHelper {
     	values.put("dateTime", jsFile.getDateTime());
     	values.put("h5", jsFile.getH5());
     	values.put("status", jsFile.getStatus());
+    	values.put("thirdExterpriseId", jsFile.getThirdExterpriseId());
     	if(jsFile instanceof JsFileUp){
     		JsFileUp jsFileUp = (JsFileUp)jsFile;
     		values.put("partId", jsFileUp.getPartId());
@@ -68,6 +69,7 @@ public class SujeDbHelper {
     	values.put("dateTime", jsFile.getDateTime());
 		values.put("h5", jsFile.getH5());
     	values.put("status", jsFile.getStatus());
+    	values.put("thirdExterpriseId", jsFile.getThirdExterpriseId());
     	if(jsFile instanceof JsFileUp){
     		JsFileUp jsFileUp = (JsFileUp)jsFile;
     		values.put("partId", jsFileUp.getPartId());
@@ -95,7 +97,7 @@ public class SujeDbHelper {
     	SQLiteDatabase db = mCoreHelper.getReadableDatabase();
     	Cursor cursor = null;
     	if(clazz == JsFileUp.class){
-    		cursor = db.rawQuery("select * from z_js_file_up where id=? ", new String[]{id});
+    		cursor = db.rawQuery("select " + getFieldsUp() + " from z_js_file_up where id=? ", new String[]{id});
     		JsFileUp jsFileUp = new JsFileUp();
     		while(cursor.moveToNext()){
     			jsFileUp.setId(cursor.getString(0));
@@ -106,16 +108,17 @@ public class SujeDbHelper {
     			jsFileUp.setDateTime(cursor.getString(5));
     			jsFileUp.setH5(cursor.getString(6));
     			jsFileUp.setStatus(cursor.getInt(7));
-    			jsFileUp.setPartId(cursor.getInt(8));
-    			jsFileUp.setServerFileId(cursor.getString(9));
-    			jsFileUp.setUploadUrl(cursor.getString(10));
-    			jsFileUp.setOwnerId(cursor.getString(11));
-    			jsFileUp.setRefreshUrl(cursor.getString(12));
+    			jsFileUp.setThirdExterpriseId(cursor.getString(8));
+    			jsFileUp.setPartId(cursor.getInt(9));
+    			jsFileUp.setServerFileId(cursor.getString(10));
+    			jsFileUp.setUploadUrl(cursor.getString(11));
+    			jsFileUp.setOwnerId(cursor.getString(12));
+    			jsFileUp.setRefreshUrl(cursor.getString(13));
         	}
     		cursor.close();
     		return (T)jsFileUp;
     	}else if(clazz == JsFileDown.class){
-    		cursor = db.rawQuery("select * from z_js_file_down where id=? ", new String[]{id});
+    		cursor = db.rawQuery("select " + getFieldsDown() + " from z_js_file_down where id=? ", new String[]{id});
     		JsFileDown jsFileDown = new JsFileDown();
     		while(cursor.moveToNext()){
     			jsFileDown.setId(cursor.getString(0));
@@ -126,6 +129,7 @@ public class SujeDbHelper {
     			jsFileDown.setDateTime(cursor.getString(5));
 				jsFileDown.setH5(cursor.getString(6));
     			jsFileDown.setStatus(cursor.getInt(7));
+    			jsFileDown.setThirdExterpriseId(cursor.getString(8));
         	}
     		cursor.close();
     		return (T)jsFileDown;
@@ -134,12 +138,15 @@ public class SujeDbHelper {
     }
     
     @SuppressWarnings("unchecked")
-	public <T> List<T> list(Class<T> clazz){
+	public <T> List<T> list(Class<T> clazz, String thirdExterpriseId, String pageNum, String pageSize){
+    	int page = Integer.parseInt(pageNum);//第几页
+    	int rows = Integer.parseInt(pageSize);//每页多少条
+    	int index = (page - 1) * rows;
     	SQLiteDatabase db = mCoreHelper.getReadableDatabase();
     	Cursor cursor = null;
     	List<T> result = new ArrayList<T>();
     	if(clazz == JsFileUp.class){
-    		cursor = db.rawQuery("select * from z_js_file_up order by id desc ", new String[]{});
+    		cursor = db.rawQuery("select " + getFieldsUp() + " from z_js_file_up where thirdExterpriseId=? order by id desc limit ?, ? ", new String[]{thirdExterpriseId, index + "", rows + ""});
     		while(cursor.moveToNext()){
     			JsFileUp jsFileUp = new JsFileUp();
 				jsFileUp.setId(cursor.getString(0));
@@ -150,16 +157,17 @@ public class SujeDbHelper {
 				jsFileUp.setDateTime(cursor.getString(5));
 				jsFileUp.setH5(cursor.getString(6));
 				jsFileUp.setStatus(cursor.getInt(7));
-				jsFileUp.setPartId(cursor.getInt(8));
-				jsFileUp.setServerFileId(cursor.getString(9));
-				jsFileUp.setUploadUrl(cursor.getString(10));
-				jsFileUp.setOwnerId(cursor.getString(11));
-				jsFileUp.setRefreshUrl(cursor.getString(12));
+				jsFileUp.setThirdExterpriseId(cursor.getString(8));
+    			jsFileUp.setPartId(cursor.getInt(9));
+    			jsFileUp.setServerFileId(cursor.getString(10));
+    			jsFileUp.setUploadUrl(cursor.getString(11));
+    			jsFileUp.setOwnerId(cursor.getString(12));
+    			jsFileUp.setRefreshUrl(cursor.getString(13));
     			result.add((T)jsFileUp);
         	}
     		cursor.close();
     	}else if(clazz == JsFileDown.class){
-    		cursor = db.rawQuery("select * from z_js_file_down order by id desc ", new String[]{});
+    		cursor = db.rawQuery("select " + getFieldsDown() + " from z_js_file_down where thirdExterpriseId=? order by id desc limit ?, ? ", new String[]{thirdExterpriseId, index + "", rows + ""});
     		while(cursor.moveToNext()){
     			JsFileDown jsFileDown = new JsFileDown();
     			jsFileDown.setId(cursor.getString(0));
@@ -170,11 +178,22 @@ public class SujeDbHelper {
     			jsFileDown.setDateTime(cursor.getString(5));
 				jsFileDown.setH5(cursor.getString(6));
     			jsFileDown.setStatus(cursor.getInt(7));
+    			jsFileDown.setThirdExterpriseId(cursor.getString(8));
     			result.add((T)jsFileDown);
         	}
     		cursor.close();
     	}
     	return result;
+    }
+    
+    private String getFieldsUp(){
+    	String sql = " id, url, name, totalSize, size, dateTime, h5, status, thirdExterpriseId, partId, serverFileId, uploadUrl, ownerId, refreshUrl ";
+    	return sql;
+    }
+    
+    private String getFieldsDown(){
+    	String sql = " id, url, name, totalSize, size, dateTime, h5, status, thirdExterpriseId ";
+    	return sql;
     }
 
 }
