@@ -116,7 +116,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class AsyncHttpClient {
 
-	public static final int DEFAULT_MAX_CONNECTIONS = 10;
+	public static final int DEFAULT_MAX_CONNECTIONS = 40;
 	public static final int DEFAULT_SOCKET_TIMEOUT = 10 * 1000;
 	public static final int DEFAULT_MAX_RETRIES = 5;
 	public static final int DEFAULT_RETRY_SLEEP_TIME_MILLIS = 1500;
@@ -396,6 +396,7 @@ public class AsyncHttpClient {
 	 * @return The default threading pool to be used
 	 */
 	protected ExecutorService getDefaultThreadPool() {
+//		return Executors.newFixedThreadPool(10);
 		return Executors.newCachedThreadPool(new ThreadFactory() {
 			private final AtomicInteger mCount = new AtomicInteger(1); 
 			@Override

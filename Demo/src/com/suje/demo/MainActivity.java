@@ -1,16 +1,22 @@
 package com.suje.demo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.alibaba.fastjson.JSONObject;
 import com.suje.inject.InjectedChromeClient;
+import com.suje.manager.ProgressChangeDown;
 
 /**
  * 本页面为webview页面，根据不同的地址，展示不同的测试页面
@@ -48,9 +54,51 @@ public class MainActivity extends Activity {
         });
         
         String url = getIntent().getStringExtra("url");
-        url="https://weixin.armjs.com/test/worker.html?token=Onebox/BA84668F6CE69F6F9AFBA8BDD5DE41E30112DCA85A6897A0F2168696&ownerId=48&thirdExterpriseId=1";
+        url="https://weixin.armjs.com/demo/worker.html?token=Onebox/530108BDEA915309B1C5F295404629268F8EABB44B76293F608E9E9C&ownerId=48&thirdExterpriseId=500310&phoneNum=13815885817&userId=33&alias=13815885817&shareSwitch=1&linkSwitch=1";
 //        url="file:///android_asset/upload/list.html?token=Onebox/BA84668F6CE69F6F9AFBA8BDD5DE41E30112DCA85A6897A0F2168696&ownerId=48&thirdExterpriseId=500310&phoneNum=13275898746&userId=35&alias=赵紫尧";
         wv.loadUrl(url);
+        
+//        TextView tv = new TextView(this);
+//        tv.setPadding(100, 100, 100, 100);
+//        tv.setText("hello");
+//        setContentView(tv);
+//        tv.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				for(int i = 0; i < 40; i++){
+//					String path = Environment.getExternalStorageDirectory().getPath() + "/Isuje/";
+//					File file = new File(path + i + ".apk");
+//					FileDownMngr.getInstance(getApplicationContext()).downLoadTask("FileDownMngr" + i, "http://sqdd.myapp.com/myapp/qqteam/tim/down/tim.apk", file);
+//				}
+//			}
+//		});
+//        FileDownMngr.getInstance(this).addListenner(mDownloadProgressChange);
     }
+    
+    private static ProgressChangeDown mDownloadProgressChange = new ProgressChangeDown() {
+        private Map<String, Boolean> mFirst = new HashMap<String, Boolean>();
+
+        @Override
+        public void onPreSuccess(String id, String thirdExterpriseId, String url, JSONObject h5) {
+        }
+
+        @Override
+        public void onPreFailure(String msg, JSONObject h5) {
+        }
+
+        @Override
+        public void onSuccess(String id) {
+        }
+
+        @Override
+        public void onProgressChange(String id, int bytesWritten, int totalSize) {
+        }
+
+        @Override
+        public void onFailure(String id, String msg) {
+        	Log.e("downloadZqmao", "download   ?" + id + "--" + msg);
+        }
+    };
     
 }

@@ -2,13 +2,17 @@ package com.suje.manager;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.Header;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -31,6 +35,11 @@ public class FileDownMngr {
 	 * 任务列表
 	 */
 	private Map<String, RequestHandle> handles = new HashMap<String, RequestHandle>();
+	
+	/**
+	 * 任务列表
+	 */
+	private Map<String, DownloadFile> files = new HashMap<String, DownloadFile>();
 	
 	/**
 	 * 监听列表
@@ -105,13 +114,25 @@ public class FileDownMngr {
 	 * @param url
 	 */
 	public void downLoadTask(final String id, final String url, final File file){
+		Log.e("downloadZqmao", id + "downLoadTask listeners.size : " + listeners.size());
 		if(handles.containsKey(id)){
+			return;
+		}
+		if(handles.size() > 10){
+			Log.e("downloadZqmao", " handles.size > 10 ");
+			if(files.containsKey(id)){
+				Log.e("downloadZqmao", " containsKey ");
+				return;
+			}
+			DownloadFile downloadFile = new DownloadFile(id, url, file);
+			files.put(id, downloadFile);
 			return;
 		}
 		RangeFileAsyncHttpResponseHandler rangeHandler = new RangeFileAsyncHttpResponseHandler(file) {
 			
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, File file) {
+				Log.e("downloadZqmao", "onSuccess listeners.size : " + listeners.size());
 				for(ProgressChangeDown listener : listeners){
 					listener.onSuccess(id);
 				}
@@ -120,7 +141,7 @@ public class FileDownMngr {
 			@Override
 			public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
 				stopTask(id);
-				Log.e("downLoadTask", "statusCode:" + statusCode + " throwable:" + throwable.getMessage());
+				Log.e("downloadZqmao", "statusCode:" + statusCode + " throwable:" + throwable.getMessage());
 				String msg = throwable.getMessage();
 				if(statusCode == 0){
 					msg = "network";
@@ -132,12 +153,22 @@ public class FileDownMngr {
 			
 			@Override
 			public void onFinish() {
+				Log.e("downloadZqmao", "onFinish:");
 				handles.remove(id);
+				files.remove(id);
+				new Handler(Looper.getMainLooper()).post(new Runnable() {
+					
+					@Override
+					public void run() {
+						for(DownloadFile downloadFile : files.values()){
+							downLoadTask(downloadFile.getId(), downloadFile.getUrl(), downloadFile.getFile());
+						}
+					}
+				});
 			}
 			
 			@Override
 			public void onProgress(int bytesWritten, int totalSize) {
-				Log.e("downLoadTask", "bytesWritten:" + bytesWritten + " totalSize:" + totalSize);
 				if(!isLoading(id)){
 					return;
 				}
@@ -149,6 +180,7 @@ public class FileDownMngr {
 		
 		RequestHandle request = FileHttpClient.getClient().get(url, new RequestParams(), rangeHandler);
 		handles.put(id, request);
+		
 	}
 	
 	/**
@@ -164,7 +196,18 @@ public class FileDownMngr {
 		boolean result = request.cancel(true);
 		if(result){
 			handles.remove(id);
+			files.remove(id);
 		}
+		new Handler(Looper.getMainLooper()).post(new Runnable() {
+			
+			@Override
+			public void run() {
+				for(DownloadFile downloadFile : files.values()){
+					downLoadTask(downloadFile.getId(), downloadFile.getUrl(), downloadFile.getFile());
+				}
+			}
+		});
+		
 		return result;
 	}
 }

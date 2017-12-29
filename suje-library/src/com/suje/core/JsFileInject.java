@@ -393,12 +393,14 @@ import com.suje.util.NetworkUtil;
             File file = null;
             if(TextUtils.isEmpty(id)){
             	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-                id = sdf.format(new Date());
-                file = FileUtil.getFile(mContext, id, url);
+            	long time = System.currentTimeMillis();
+            	String prv = sdf.format(new Date(time));
+                id = time + "";
+                file = FileUtil.getFile(mContext, prv, url);
                 JsFileDown jsFileDown = new JsFileDown();
                 jsFileDown.setId(id);
                 jsFileDown.setUrl(file.getAbsolutePath());
-                jsFileDown.setDateTime(id);
+                jsFileDown.setDateTime(prv);
                 jsFileDown.setStatus(JsFile.STATUS_ING);
                 jsFileDown.setName(file.getName());
                 jsFileDown.setH5(h5.toJSONString());
@@ -431,12 +433,12 @@ import com.suje.util.NetworkUtil;
                     e.printStackTrace();
                 }
             }
-            Log.e("download", "download   " + file.length() + "||" + id + file.getAbsolutePath());
-            if(!FileDownMngr.getInstance(mContext).isLoading(id)){
-                FileDownMngr.getInstance(mContext).downLoadTask(id, url, file);
-            }
             if(mDownSuccessCallback != null){
             	mDownSuccessCallback.apply(id, h5);
+            }
+            if(!FileDownMngr.getInstance(mContext).isLoading(id)){
+            	Log.e("downloadZqmao", "download   " + file.length() + "||" + id + file.getAbsolutePath());
+                FileDownMngr.getInstance(mContext).downLoadTask(id, url, file);
             }
         }
 
@@ -462,7 +464,6 @@ import com.suje.util.NetworkUtil;
 
         @Override
         public void onProgressChange(String id, int bytesWritten, int totalSize) {
-            Log.e("onProgressChange", id + "" + bytesWritten + "--" + totalSize + "--" + mFirst.containsKey(id));
             if(mProgressDownSuccessCallback != null){
             	mProgressDownSuccessCallback.apply(id, bytesWritten, totalSize);
             }
@@ -482,6 +483,7 @@ import com.suje.util.NetworkUtil;
 
         @Override
         public void onFailure(String id, String msg) {
+        	Log.e("downloadZqmao", "download   ?" + id + "--" + msg);
             try {
             	JsFileDown jsFileDown = SujeDbHelper.getInstance(mContext).load(JsFileDown.class, id);
             	if(!msg.equals("network")){
